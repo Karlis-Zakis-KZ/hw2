@@ -11,14 +11,22 @@ int main(int argc, char *argv[]) {
 	int *m_final;
 	int *p;
 
+	printf("Tingy1");
+
 	// Read m1
 	scanf("%d %d", &h1, &w1);
+
+	printf("Tingy2");
 
 	// allocate memory for m1
 	m1 = (int *)malloc(sizeof(int) * h1 * w1);
 
+	printf("Tingy3");
+
 	for (p = m1; p < m1 + h1 * w1; p++)
 		scanf("%d", p);
+
+	printf("Tingy4");
 
 	// Print m1
 	for (p = m1; p < m1 + h1 * w1; p++) {
