@@ -3,6 +3,8 @@
 #include "matmul.h"
 
 int main(int argc, char *argv[]) {
+
+	printf("Tingy0");
 	
 	int w_final, h_final;
 	int w1, h1, w2, h2;
