@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 	m1 = (int *)malloc(sizeof(int) * h1 * w1);
 
 	for (p = m1; p < m1 + h1 * w1; p++)
-		scanf("%d", p);s
+		scanf("%d", p);
 
 	// Print m1
 	for (p = m1; p < m1 + h1 * w1; p++) {
