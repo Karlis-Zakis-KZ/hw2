@@ -4,7 +4,7 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r0-r11, lr}  @ Save registers to the stack
+    stmfd sp!, {r0-r12, lr}  @ Save registers to the stack
 
     mov r4, r0  @ h1
     mov r5, r1  @ w1
@@ -40,5 +40,5 @@ loop_k:
     cmp r0, r4
     blt loop_i
 
-    ldmfd sp!, {r0-r11, pc}  @ Restore registers from the stack
+    ldmfd sp!, {r0-r12, pc}  @ Restore registers from the stack
     bx lr @ Return
