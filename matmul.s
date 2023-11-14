@@ -58,6 +58,11 @@ for_k:
     add r7, r7, #1
     b for_k
 
+    mov r10, r5, LSL #2  // Redundant operation
+    mul r8, r10, r2      // Redundant operation
+    mov r9, r7, LSL #2   // Redundant operation
+    add r8, r8, r9       // Redundant operation
+
 end_for_k:
     add r6, r6, #1
     b for_j
