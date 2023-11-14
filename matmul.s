@@ -3,6 +3,8 @@
 .global matmul
 .type matmul, %function
 
+@ matmul(h1, w1, m1, h2, w2, m2, m_final);
+
 matmul:
     stmfd sp!, {r0-r12, lr}  @ Save registers to the stack
 
@@ -32,11 +34,11 @@ loop_k:
     cmp r3, r5
     blt loop_k
     add r1, r1, #1
-    add r9, r9, r5, lsl #2  @ Increment by width of matrix 2
+    add r9, r9, #4  @ Increment by width of matrix 4
     cmp r1, r8
     blt loop_j
     add r0, r0, #1
-    add r6, r6, r5, lsl #2  @ Increment by width of matrix 1
+    add r6, r6, #4  @ Increment by width of matrix 4
     cmp r0, r4
     blt loop_i
 
