@@ -4,68 +4,80 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r0-r12, lr}   @ Save registers and LR on the stack
+    stmfd sp!, {r4-r12, lr}   @ Save registers and LR on the stack
 
-    mov r5, #0                 @ Initialize loop indices
-    mov r6, #0 
-    mov r7, #0 
+    mov r4, #0                 @ Initialize loop indices
 
-for_i:
-    ldr r3, [sp, #0]          @ Load matrix dimensions
-    cmp r5, r3                @ Compare i with the number of rows of matrix A
-    bge end_for_i             @ Break if i >= rows_A
+    ldr r1, [sp, #0]           @ Load matrix A dimensions
+    ldr r2, [sp, #4]           @ Load matrix B dimensions
+    ldr r3, [sp, #8]           @ Load result matrix dimensions
 
-    mov r6, #0                @ Reset j loop index to 0
+    mov r5, r1, LSL #2         @ Calculate total size of matrix A
+    mov r6, r2, LSL #2         @ Calculate total size of matrix B
+    mov r7, r3, LSL #2         @ Calculate total size of result matrix
 
-for_j:
-    ldr r4, [sp, #56]         @ Load matrix dimension
-    cmp r6, r4                @ Compare j with the number of columns of matrix B
-    bge end_for_j             @ Break if j >= cols_B
+    cmp r5, #0                 @ Check if any matrix dimension is 0
+    beq end_matmul
 
-    mov r7, #0                @ Reset k loop index to 0
+    cmp r6, #0
+    beq end_matmul
 
-for_k:
-    ldr r2, [sp, #12]         @ Load dimension common to both matrices
-    cmp r7, r2                @ Compare k with cols_A/rows_B
-    bge end_for_k             @ Break if k >= cols_A/rows_B
+    cmp r7, #0
+    beq end_matmul
 
-    mov r10, r5, LSL #2      @ Calculate index for element in matrix A
-    mul r8, r10, r2          
-    mov r9, r7, LSL #2       @ Calculate index for element in matrix B
-    add r8, r8, r9 
+    mov r8, #0                  @ r8 will store the current index in result matrix
 
-    ldr r0, [sp, #8]         @ Load base addresses of matrices
-    ldr r2, [r0, r8]         @ Load element from matrix A
+    mov r9, #0                  @ Initialize i loop index to 0
+outer_loop:
+    cmp r9, r1                  @ Compare i with rows of matrix A
+    bge end_outer_loop          @ Break if i >= rows_A
 
-    mul r8, r9, r4           @ Calculate index for element in matrix C
-    mov r10, r6, LSL #2      
-    add r8, r8, r10 
-    ldr r1, [sp, #60]        @ Load base address of result matrix
-    ldr r3, [r1, r8]         @ Load element from matrix B
+    mov r10, #0                 @ Initialize j loop index to 0
+middle_loop:
+    cmp r10, r2                 @ Compare j with cols of matrix B
+    bge end_middle_loop         @ Break if j >= cols_B
 
-    mul r11, r2, r3          @ Multiply corresponding elements
+    mov r11, #0                 @ Initialize k loop index to 0
+    mov r12, #0                 @ r12 will store the current index in matrix A and B
+inner_loop:
+    cmp r11, r3                 @ Compare k with cols_A/rows_B
+    bge end_inner_loop          @ Break if k >= cols_A/rows_B
 
-    ldr r0, [sp, #64]        @ Load base address of result matrix
-    mov r10, r5, LSL #2      @ Calculate index for element in matrix C
-    mul r8, r10, r4          
-    mov r12, r6, LSL #2      
-    add r8, r8, r12 
+    mul r12, r9, r1             @ Calculate index for element in matrix A
+    add r12, r12, r11           @ r12 holds the index for matrix A
 
-    ldr r1, [r0, r8]         @ Load element from result matrix
-    add r2, r11, r1          @ Add product to existing value in result matrix
-    str r2, [r0, r8]         @ Store the updated value in result matrix
+    mul r4, r10, r2             @ Calculate index for element in matrix B
+    add r4, r4, r11             @ r4 holds the index for matrix B
 
-    add r7, r7, #1           @ Increment k
-    b for_k                  
+    ldr r5, [sp, #12]           @ Load base address of matrix A
+    ldr r6, [sp, #16]           @ Load base address of matrix B
+    ldr r7, [sp, #20]           @ Load base address of result matrix
 
-end_for_k:
-    add r6, r6, #1           @ Increment j
-    b for_j                  
+    ldr r5, [r5, r12, LSL #2]  @ Load element from matrix A
+    ldr r6, [r6, r4, LSL #2]   @ Load element from matrix B
 
-end_for_j:
-    add r5, r5, #1           @ Increment i
-    b for_i                  
+    mul r5, r5, r6              @ Multiply corresponding elements
 
-end_for_i:
-    ldmfd sp!, {r0-r12, lr}  @ Restore registers and LR from the stack
-    bx lr                     @ Return from the function
+    ldr r6, [r7, r8, LSL #2]   @ Load element from result matrix
+    add r5, r5, r6              @ Add product to existing value in result matrix
+    str r5, [r7, r8, LSL #2]   @ Store the updated value in result matrix
+
+    add r8, r8, #1              @ Increment result matrix index
+    add r11, r11, #1            @ Increment k
+    b inner_loop
+
+end_inner_loop:
+    add r10, r10, #1            @ Increment j
+    b middle_loop
+
+end_middle_loop:
+    add r9, r9, #1              @ Increment i
+    b outer_loop
+
+end_outer_loop:
+    ldmfd sp!, {r4-r12, lr}     @ Restore registers and LR from the stack
+    bx lr                        @ Return from the function
+
+end_matmul:
+    ldmfd sp!, {r4-r12, lr}     @ Restore registers and LR from the stack
+    bx lr                        @ Return from the function
