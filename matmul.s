@@ -1,9 +1,9 @@
 .text
 .align 2
-.global matmul_optimized
-.type matmul_optimized, %function
+.global matmul
+.type matmul, %function
 
-matmul_optimized:
+matmul:
     stmfd sp!, {r4-r11, lr}
 
     ldr r4, [sp, #0]   @ Load dimensions
@@ -28,26 +28,27 @@ for_j:
     mov r3, #0         @ Reset k to 0 for every j iteration
     mov r11, r1, LSL #2 @ Calculate base address for matrix B column
 
-    vldr d0, [r2]!     @ Load C[i][j] to a NEON register
-    add r2, r2, #8     @ Move to the next C element
+    mov r12, #0        @ Initialize the result in C[i][j]
 
 for_k:
     cmp r3, r5         @ Compare k with columns of A
     bge end_for_k
 
-    vldr d1, [r0, r3, LSL #2]  @ Load A[i][k] to a NEON register
-    vldr d2, [r1, r3, LSL #3]  @ Load B[k][j] to a NEON register
-    vmla.f32 d0, d1, d2        @ Vector matrix multiplication and accumulation
+    ldr r7, [r0, r3, LSL #2]  @ Load A[i][k]
+    ldr r8, [r1, r3, LSL #2]  @ Load B[k][j]
 
-    add r3, r3, #2     @ Move to the next pair of elements in A and B
+    mul r9, r7, r8     @ Multiply corresponding elements
+    add r12, r12, r9   @ Accumulate the result
+
+    add r3, r3, #1     @ Move to the next element in A and B
 
     b for_k
 
 end_for_k:
-    vstr d0, [r10]!    @ Store the result C[i][j]
-    add r10, r10, #8   @ Move to the next element in C
+    str r12, [r10]     @ Store the result C[i][j]
 
-    add r1, r1, #1     @ Move to the next column in B
+    add r10, r10, #4   @ Move to the next element in C
+    add r1, r1, #4     @ Move to the next column in B
     b for_j
 
 end_for_j:
