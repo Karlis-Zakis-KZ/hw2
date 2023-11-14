@@ -10,24 +10,24 @@ matmul:
     mov r5, #0
     mov r6, #0
 
-for_i:
+loop_i:
     ldr r2, [sp, #0]
     cmp r4, r2
-    bge end_for_i
+    bge end_loop_i
 
     mov r5, #0
 
-for_j:
+loop_j:
     ldr r3, [sp, #56]
     cmp r5, r3
-    bge end_for_j
+    bge end_loop_j
 
     mov r6, #0
 
-for_k:
+loop_k:
     ldr r1, [sp, #12]
     cmp r6, r1
-    bge end_for_k
+    bge end_loop_k
 
     mov r9, r4, LSL #2
     mul r7, r9, r1
@@ -56,16 +56,16 @@ for_k:
     str r1, [r0, r7]
 
     add r6, r6, #1
-    b for_k
+    b loop_k
 
-end_for_k:
+end_loop_k:
     add r5, r5, #1
-    b for_j
+    b loop_j
 
-end_for_j:
+end_loop_j:
     add r4, r4, #1
-    b for_i
+    b loop_i
 
-end_for_i:
+end_loop_i:
     ldmfd sp!, {r0-r12, lr}
     bx lr
