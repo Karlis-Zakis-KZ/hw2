@@ -28,8 +28,8 @@ loop_j:
 loop_k:
     ldr r12, [r11, r2, lsl #2]  @ Load element from m1
     ldr ip, [lr, r3, lsl #2]  @ Load element from m2
-    mul ip, r12, ip  @ Multiply elements
-    str ip, [r10, r1, lsl #2]  @ Store result in m_final
+    mul r12, r12, ip  @ Multiply elements
+    str r12, [r10, r1, lsl #2]  @ Store result in m_final
     add r3, r3, #1  @ Increment column index for m2
     add r2, r2, #1  @ Increment row index for m1
     cmp r2, r5  @ Check if row index for m1 exceeds matrix width
