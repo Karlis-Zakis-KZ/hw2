@@ -41,8 +41,8 @@ outer_loop:  @ Loop for rows
     ldr r2, [sp, #20] @ Load matrix B base address
     ldr r3, [r2, r11] @ Load B[r9][r8]
 
-    mul r1, r1, r3  @ Multiply A[r7][r9] * B[r9][r8]
-    add r10, r10, r1  @ Accumulate the product
+    mul r11, r1, r3  @ Multiply A[r7][r9] * B[r9][r8]
+    add r10, r10, r11  @ Accumulate the product
 
     add r9, r9, #1  @ Increment inner index
     b innermost_loop
