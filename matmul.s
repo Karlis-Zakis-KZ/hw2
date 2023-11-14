@@ -4,71 +4,71 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r0-r12, lr}  // Save registers to the stack
+    stmfd sp!, {r0-r12, lr}
 
-    mov r5, #0  // Initialize i
+    mov r8, #0
+    mov r9, #0
+    mov r10, #0
 
-i_loop:
-    ldr r3, [sp, #0]  // Load matrix1 row count
-    cmp r5, r3  // Compare i with matrix1 row count
-    bge end_i_loop  // If i >= matrix1 row count, exit i loop
+while_i:
+    ldr r4, [sp, #0]
+    cmp r8, r4
+    bge end_while_i
 
-    mov r6, #0  // Initialize j
+    mov r9, #0
 
-j_loop:
-    ldr r4, [sp, #56]  // Load matrix2 column count
-    cmp r6, r4  // Compare j with matrix2 column count
-    bge end_j_loop  // If j >= matrix2 column count, exit j loop
+while_j:
+    ldr r5, [sp, #56]
+    cmp r9, r5
+    bge end_while_j
 
-    mov r7, #0  // Initialize k
+    mov r10, #0
 
-k_loop:
-    ldr r2, [sp, #12]  // Load matrix1 column count (or matrix2 row count)
-    cmp r7, r2  // Compare k with matrix1 column count
-    bge end_k_loop  // If k >= matrix1 column count, exit k loop
+while_k:
+    ldr r3, [sp, #12]
+    cmp r10, r3
+    bge end_while_k
 
-    // Calculate the offset for matrix1[i][k] and load the value
-    mov r10, r5, LSL #2
-    mul r8, r10, r2
-    mov r9, r7, LSL #2
-    add r8, r8, r9
-    ldr r0, [sp, #8]
-    ldr r2, [r0, r8]
+    mov r11, r8, LSL #2
+    mul r6, r11, r3
+    mov r12, r10, LSL #2
+    add r6, r6, r12
 
-    // Calculate the offset for matrix2[k][j] and load the value
-    mul r8, r9, r4
-    mov r10, r6, LSL #2
-    add r8, r8, r10
-    ldr r1, [sp, #60]
-    ldr r3, [r1, r8]
+    ldr r1, [sp, #8]
+    ldr r3, [r1, r6]
 
-    // Multiply matrix1[i][k] and matrix2[k][j]
-    mul r11, r2, r3
+    mul r6, r12, r5
+    mov r11, r9, LSL #2
+    add r6, r6, r11
+    ldr r2, [sp, #60]
+    ldr r4, [r2, r6]
 
-    // Calculate the offset for result[i][j], load the value, add the multiplication result, and store the new value
-    ldr r0, [sp, #64]
-    mov r10, r5, LSL #2
-    mul r8, r10, r4
-    mov r12, r6, LSL #2
-    add r8, r8, r12
-    ldr r1, [r0, r8]
-    add r2, r11, r1
-    str r2, [r0, r8]
+    mul r7, r3, r4
 
-    add r7, r7, #1  // Increment k
-    cmp r7, r2
-    blt k_loop  // Repeat k loop
+    ldr r1, [sp, #64]
+    mov r11, r8, LSL #2
+    mul r6, r11, r5
+    mov r0, r9, LSL #2
+    add r6, r6, r0
 
-end_k_loop:
-    add r6, r6, #1  // Increment j
-    cmp r6, r4
-    blt j_loop  // Repeat j loop
+    ldr r2, [r1, r6]
+    add r3, r7, r2
+    str r3, [r1, r6]
 
-end_j_loop:
-    add r5, r5, #1  // Increment i
-    cmp r5, r3
-    blt i_loop  // Repeat i loop
+    add r10, r10, #1
+    cmp r10, r3
+    blt while_k
 
-end_i_loop:
-    ldmfd sp!, {r0-r12, lr}  // Restore registers from the stack
-    bx lr  // Return from function
+end_while_k:
+    add r9, r9, #1
+    cmp r9, r5
+    blt while_j
+
+end_while_j:
+    add r8, r8, #1
+    cmp r8, r4
+    blt while_i
+
+end_while_i:
+    ldmfd sp!, {r0-r12, lr}
+    bx lr
