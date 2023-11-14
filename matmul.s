@@ -4,45 +4,65 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r4-r11, lr}  @ Save registers to the stack
+  stmfd sp!, {r0-r12, lr}
 
-    mov r4, r0  @ h1
-    mov r5, r1  @ w1
-    mov r6, r2  @ m1
-    mov r7, r3  @ h2
-    mov r8, r4  @ w2
-    mov r9, r5  @ m2
-    mov r10, r6  @ m_final
+  mov r5, #0 
+  mov r6, #0 
+  mov r7, #0 
 
-    mov r0, #0  @ Initialize loop counter
+for_i:
+  ldr r3, [sp, #0]
+  cmp r5, r3 
+  bge end_for_i
+  mov r6, #0 
 
-loop_i:
-    mov r1, #0  @ Initialize row index for m_final
-    mov r11, r6  @ Save start of row for m1
+for_j:
+  ldr r4, [sp, #56]
+  cmp r6, r4 
+  bge end_for_j
+  mov r7, #0 
 
-loop_j:
-    mov r2, #0  @ Initialize row index for m1
-    mov r3, #0  @ Initialize column index for m2
-    mov lr, r9  @ Save start of row for m2
-    mov ip, #0  @ Initialize accumulator for dot product
+for_k:
+  ldr r2, [sp, #12]
+  cmp r7, r2 
+  bge end_for_k
 
-loop_k:
-    ldr r12, [r11, r2, lsl #2]  @ Load element from m1
-    ldr r14, [lr, r3, lsl #2]  @ Load element from m2
-    mla ip, r12, r14, ip  @ Multiply elements and add to accumulator
-    add r3, r3, #1  @ Increment column index for m2
-    add r2, r2, #1  @ Increment row index for m1
-    cmp r2, r5  @ Check if row index for m1 exceeds matrix width
-    blt loop_k  @ Branch back if not done
+  mov r10, r5, LSL#2 
+  mul r8, r10, r2 
+  mov r9, r7, LSL#2
+  add r8, r8, r9 
+  ldr r0, [sp, #8] 
+  ldr r2, [r0, r8] 
 
-    str ip, [r10, r1, lsl #2]  @ Store result in m_final
-    add r1, r1, #1  @ Increment row index of m_final
-    cmp r1, r8  @ Check if row index for m_final exceeds matrix width
-    blt loop_j  @ Branch back if not done
+  mul r8, r9, r4 
+  mov r10, r6, LSL#2 
+  add r8, r8, r10 
+  ldr r1, [sp, #60] 
+  ldr r3, [r1, r8] 
 
-    add r0, r0, #1  @ Increment loop counter
-    add r6, r6, r5, lsl #2  @ Increment pointer to m1 by its height
-    cmp r0, r4  @ Check if loop counter exceeds matrix height
-    blt loop_i  @ Branch back if not done
+  mul r11, r2, r3 
 
-    ldmfd sp!, {r4-r11, pc}  @ Restore registers from the stack
+  ldr r0, [sp, #64] 
+  mov r10, r5, LSL#2 
+  mul r8, r10, r4 
+  mov r12, r6, LSL#2 
+  add r8, r8, r12 
+
+  ldr r1, [r0, r8] 
+  add r2, r11, r1  
+  str r2, [r0, r8] 
+
+  add r7, r7, #1 
+  b for_k
+
+end_for_k:
+  add r6, r6, #1 
+  b for_j
+
+end_for_j:
+  add r5, r5, #1 
+  b for_i
+
+end_for_i:
+  ldmfd sp!, {r0-r12, lr}
+  bx lr
