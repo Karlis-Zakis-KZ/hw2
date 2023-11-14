@@ -7,8 +7,6 @@ matmul:
     stmfd sp!, {r0-r12, lr}
 
     mov r8, #0
-    mov r9, #0
-    mov r10, #0
 
 while_i:
     ldr r4, [sp, #0]
@@ -56,18 +54,15 @@ while_k:
     str r3, [r1, r6]
 
     add r10, r10, #1
-    cmp r10, r3
-    blt while_k
+    b while_k
 
 end_while_k:
     add r9, r9, #1
-    cmp r9, r5
-    blt while_j
+    b while_j
 
 end_while_j:
     add r8, r8, #1
-    cmp r8, r4
-    blt while_i
+    b while_i
 
 end_while_i:
     ldmfd sp!, {r0-r12, lr}
