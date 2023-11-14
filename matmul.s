@@ -1,9 +1,9 @@
 .text
 .align 2
-.global matrix_multiply
-.type matrix_multiply, %function
+.global matmul
+.type matmul, %function
 
-matrix_multiply:
+matmul:
     stmfd sp!, {r0-r12, lr}
 
     mov r4, #0
