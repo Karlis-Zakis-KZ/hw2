@@ -31,8 +31,8 @@ loop_k:
     mul r12, r12, ip  @ Multiply elements
     str r12, [r10, r1, lsl #2]  @ Store result in m_final
     add r3, r3, #1  @ Increment column index for m2
-    add r2, r2, #1  @ Increment row index for m1
-    cmp r2, r5  @ Check if row index for m1 exceeds matrix width
+    add r1, r1, #1  @ Increment row index for m_final
+    cmp r3, r5  @ Check if column index for m2 exceeds matrix width
     blt loop_k  @ Branch back if not done
 
     add r1, r1, #1  @ Increment row index of m_final
@@ -42,9 +42,3 @@ loop_k:
 
     add r0, r0, #1  @ Increment loop counter
     add r6, r6, r5, lsl #2  @ Increment pointer to m1 by its height
-    add r9, r9, r8, lsl #2  @ Increment pointer to m2 by its height
-    cmp r0, r4  @ Check if loop counter exceeds matrix height
-    blt loop_i  @ Branch back if not done
-
-    ldmfd sp!, {r0-r12, pc}  @ Restore registers from the stack
-    bx lr  @ Return
