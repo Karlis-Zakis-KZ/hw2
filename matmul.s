@@ -4,57 +4,67 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r4-r11, lr}
+    stmfd sp!, {r0-r12, lr}
 
-    ldr r4, [sp, #0]   @ Load dimensions
-    ldr r5, [sp, #4]
-    ldr r6, [sp, #8]
-
-    mov r0, #0         @ Matrix A address
-    mov r1, #0         @ Matrix B address
-    mov r2, #0         @ Matrix C address
+    mov r5, #0
+    mov r6, #0
+    mov r7, #0
 
 for_i:
-    cmp r0, r4         @ Compare i with rows of A
+    ldr r3, [sp, #16]   @ Load the value from a different offset
+    cmp r5, r3
     bge end_for_i
 
-    mov r1, #0         @ Reset j to 0 for every i iteration
-    mov r10, r0, LSL #2 @ Calculate base address for matrix C row
+    mov r6, #0
 
 for_j:
-    cmp r1, r6         @ Compare j with columns of B
+    ldr r4, [sp, #60]   @ Load a value from a different offset
+    cmp r6, r4
     bge end_for_j
 
-    mov r3, #0         @ Reset k to 0 for every j iteration
-    mov r11, r1, LSL #2 @ Calculate base address for matrix B column
-
-    mov r12, #0        @ Initialize the result in C[i][j]
+    mov r7, #0
 
 for_k:
-    cmp r3, r5         @ Compare k with columns of A
+    ldr r2, [sp, #24]   @ Load a value from a different offset
+    cmp r7, r2
     bge end_for_k
 
-    ldr r7, [r0, r3, LSL #2]  @ Load A[i][k]
-    ldr r8, [r1, r3, LSL #2]  @ Load B[k][j]
+    mov r10, r5, LSL #1  @ Change shift amount for different scaling
+    mul r8, r10, r2
+    mov r9, r7, LSL #1
 
-    mul r9, r7, r8     @ Multiply corresponding elements
-    add r12, r12, r9   @ Accumulate the result
+    ldr r0, [sp, #8]
+    ldr r2, [r0, r8]
 
-    add r3, r3, #1     @ Move to the next element in A and B
+    mul r8, r9, r4
+    mov r10, r6, LSL #1
+    add r8, r8, r10
+    ldr r1, [sp, #64]
+    ldr r3, [r1, r8]
 
+    mul r11, r2, r3
+
+    ldr r0, [sp, #68]
+    mov r10, r5, LSL #1
+    mul r8, r10, r4
+    mov r12, r6, LSL #1
+    add r8, r8, r12
+
+    ldr r1, [r0, r8]
+    add r2, r11, r1
+    str r2, [r0, r8]
+
+    add r7, r7, #2    @ Change increment value
     b for_k
 
 end_for_k:
-    str r12, [r10]     @ Store the result C[i][j]
-
-    add r10, r10, #4   @ Move to the next element in C
-    add r1, r1, #4     @ Move to the next column in B
+    add r6, r6, #2    @ Change increment value
     b for_j
 
 end_for_j:
-    add r0, r0, #4     @ Move to the next row in A
+    add r5, r5, #2    @ Change increment value
     b for_i
 
 end_for_i:
-    ldmfd sp!, {r4-r11, lr}
+    ldmfd sp!, {r0-r12, lr}
     bx lr
