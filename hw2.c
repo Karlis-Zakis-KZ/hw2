@@ -39,17 +39,9 @@ int main(int argc, char *argv[]) {
 		free(m2);
 		exit(1);
 	}
-	
+
 	// allocate memory for matrix
 	m_final = (int *)malloc(sizeof(int) * h_final * w_final);
-
-	// Printing out the matrixes to check them 
-	for (p = m1; p < m1 + h1 * w1; p++)
-		printf("%d ", *p);
-	printf("\n");
-	for (p = m2; p < m2 + h2 * w2; p++)
-		printf("%d ", *p);
-	printf("\n");
 
 	// call matmul function
 	matmul(h1, w1, m1, h2, w2, m2, m_final);
