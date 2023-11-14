@@ -4,7 +4,7 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r1-r11, lr}
+    stmfd sp!, {r0-r11, lr}
     mov r8, #0
 
 while_i:
@@ -55,5 +55,5 @@ end_while_j:
     b while_i
 
 end_while_i:
-    ldmfd sp!, {r1-r11, lr}
+    ldmfd sp!, {r0-r11, lr}
     bx lr
