@@ -33,13 +33,13 @@ int main(int argc, char *argv[]) {
 	//
 	w_final = w2;
 	h_final = h1;
-	if (w1 != h2)
-	{
+	if (w1 != h2){
 		// The number of columns of the 1st matrix must equal the number of rows of the 2nd matrix.
 		free(m1);
 		free(m2);
 		exit(1);
 	}
+	
 	// allocate memory for matrix
 	m_final = (int *)malloc(sizeof(int) * h_final * w_final);
 
@@ -51,15 +51,13 @@ int main(int argc, char *argv[]) {
 		printf("%d ", *p);
 	printf("\n");
 
-
 	// call matmul function
 	matmul(h1, w1, m1, h2, w2, m2, m_final);
 
 	// print result
 	int i, j;
 	printf("%d %d\n", h_final, w_final);
-	for (i = 0; i < h_final; i++)
-	{
+	for (i = 0; i < h_final; i++){
 		for (j = 0; j < w_final; j++)
 		{
 		printf("%d", m_final[i * w_final + j]);
