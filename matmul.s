@@ -5,21 +5,18 @@
 
 matmul:
     stmfd sp!, {r0-r12, lr}
-
     mov r8, #0
 
 while_i:
     ldr r4, [sp, #0]
     cmp r8, r4
     bge end_while_i
-
     mov r9, #0
 
 while_j:
     ldr r5, [sp, #56]
     cmp r9, r5
     bge end_while_j
-
     mov r10, #0
 
 while_k:
