@@ -2,64 +2,56 @@
 #include <stdlib.h>
 #include "matmul.h"
 
+void read_matrix(int height, int width, int* matrix) {
+    for (int* p = matrix; p < matrix + height * width; p++)
+        scanf("%d", p);
+}
+
 int main(int argc, char *argv[]) {
-	
-	int w_final, h_final;
-	int w1, h1, w2, h2;
-	int *m1;
-	int *m2;
-	int *m_final;
-	int *p;
+    int w1, h1, w2, h2;
+    int *m1, *m2, *m_final;
 
-	// Read m1
-	scanf("%d %d", &h1, &w1);
+    // Read dimensions of m1 and allocate memory
+    scanf("%d %d", &h1, &w1);
+    m1 = (int *)malloc(sizeof(int) * h1 * w1);
+    read_matrix(h1, w1, m1);
 
-	// allocate memory for m1
-	m1 = (int *)malloc(sizeof(int) * h1 * w1);
+    // Read dimensions of m2 and allocate memory
+    scanf("%d %d", &h2, &w2);
+    m2 = (int *)malloc(sizeof(int) * h2 * w2);
+    read_matrix(h2, w2, m2);
 
-	for (p = m1; p < m1 + h1 * w1; p++)
-		scanf("%d", p);
+    // Check for matrix multiplication compatibility
+    if (w1 != h2){
+        free(m1);
+        free(m2);
+        exit(1);
+    }
 
-	// Read m2
-	scanf("%d %d", &h2, &w2);
+    // Allocate memory for result matrix
+    int h_final = h1;
+    int w_final = w2;
+    m_final = (int *)malloc(sizeof(int) * h_final * w_final);
 
-	// allocate memory for m2
-	m2 = (int *)malloc(sizeof(int) * h2 * w2);
+    // Perform matrix multiplication
+    matmul(h1, w1, m1, h2, w2, m2, m_final);
 
-	// Read m2
-	for (p = m2; p < m2 + h2 * w2; p++)
-		scanf("%d", p);
+    // Print result
+    printf("%d %d\n", h_final, w_final);
+    for (int i = 0; i < h_final; i++){
+        for (int j = 0; j < w_final; j++)
+        {
+            printf("%d", m_final[i * w_final + j]);
+            if (j != w_final - 1)
+                printf(" ");
+        }
+        printf("\n");
+    }
 
-	//
-	w_final = w2;
-	h_final = h1;
-	if (w1 != h2){
-		// The number of columns of the 1st matrix must equal the number of rows of the 2nd matrix.
-		free(m1);
-		free(m2);
-		exit(1);
-	}
+    // Free allocated memory
+    free(m1);
+    free(m2);
+    free(m_final);
 
-	// allocate memory for matrix
-	m_final = (int *)malloc(sizeof(int) * h_final * w_final);
-
-	// call matmul function
-	matmul(h1, w1, m1, h2, w2, m2, m_final);
-
-	// print result
-	int i, j;
-	printf("%d %d\n", h_final, w_final);
-	for (i = 0; i < h_final; i++){
-		for (j = 0; j < w_final; j++)
-		{
-		printf("%d", m_final[i * w_final + j]);
-		if (j != w_final - 1)
-			printf(" ");
-		}
-		printf("\n");
-	}
-
-	free(m1);
-	free(m2);
-	free(m_final);
+    return 0;
 }
