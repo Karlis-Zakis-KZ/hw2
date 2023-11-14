@@ -14,15 +14,15 @@ while_i:
     mov r9, #0
 
 while_j:
-    cmp r9, r4
-    bge end_while_j
     ldr r5, [sp, #56]
+    cmp r9, r5
+    bge end_while_j
     mov r10, #0
 
 while_k:
-    cmp r10, r5
-    bge end_while_k
     ldr r3, [sp, #12]
+    cmp r10, r3
+    bge end_while_k
 
     mul r6, r8, r3
     add r6, r6, r10
