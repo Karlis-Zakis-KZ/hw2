@@ -4,67 +4,62 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r0-r12, lr}
+    stmfd sp!, {r4-r11, lr} @ Save registers
 
-    mov r5, #0
-    mov r6, #0
-    mov r7, #0
+    ldr r3, [sp, #4]  @ Load dimensions
+    ldr r4, [sp, #8]
+    ldr r5, [sp, #12]
+    lsl r6, r3, #2    @ Calculate size of each row in bytes
 
-for_i:
-    ldr r3, [sp, #16]   @ Load the value from a different offset
-    cmp r5, r3
-    bge end_for_i
+    mov r7, #0  @ Initialize loop variables
+    mov r8, #0
+    mov r9, #0
 
-    mov r6, #0
+outer_loop:  @ Loop for rows
+    cmp r7, r3  @ Check if the row index reached the end
+    bge end_outer_loop
 
-for_j:
-    ldr r4, [sp, #60]   @ Load a value from a different offset
-    cmp r6, r4
-    bge end_for_j
+    mov r8, #0  @ Reset column index for inner loop
 
-    mov r7, #0
+    inner_loop:  @ Loop for columns
+    cmp r8, r4  @ Check if the column index reached the end
+    bge end_inner_loop
 
-for_k:
-    ldr r2, [sp, #24]   @ Load a value from a different offset
-    cmp r7, r2
-    bge end_for_k
+    mov r10, #0  @ Reset accumulator for the element at [r7][r8]
 
-    mov r10, r5, LSL #1  @ Change shift amount for different scaling
-    mul r8, r10, r2
-    mov r9, r7, LSL #1
+    innermost_loop:  @ Loop for innermost computation
+    cmp r9, r5  @ Check if the inner index reached the end
+    bge end_innermost_loop
 
-    ldr r0, [sp, #8]
-    ldr r2, [r0, r8]
+    lsl r11, r7, #2   @ Calculate offsets
+    add r11, r11, r9, LSL #2
+    ldr r0, [sp, #16] @ Load matrix A base address
+    ldr r1, [r0, r11] @ Load A[r7][r9]
 
-    mul r8, r9, r4
-    mov r10, r6, LSL #1
-    add r8, r8, r10
-    ldr r1, [sp, #64]
-    ldr r3, [r1, r8]
+    lsl r11, r9, #2
+    add r11, r11, r8, LSL #2
+    ldr r2, [sp, #20] @ Load matrix B base address
+    ldr r3, [r2, r11] @ Load B[r9][r8]
 
-    mul r11, r2, r3
+    mul r1, r1, r3  @ Multiply A[r7][r9] * B[r9][r8]
+    add r10, r10, r1  @ Accumulate the product
 
-    ldr r0, [sp, #68]
-    mov r10, r5, LSL #1
-    mul r8, r10, r4
-    mov r12, r6, LSL #1
-    add r8, r8, r12
+    add r9, r9, #1  @ Increment inner index
+    b innermost_loop
 
-    ldr r1, [r0, r8]
-    add r2, r11, r1
-    str r2, [r0, r8]
+    end_innermost_loop:
+    lsl r11, r7, #2
+    add r11, r11, r8, LSL #2
+    ldr r2, [sp, #24]  @ Load matrix C base address
+    str r10, [r2, r11]  @ Store result in C[r7][r8]
 
-    add r7, r7, #2    @ Change increment value
-    b for_k
+    add r8, r8, #1  @ Increment column index
+    b inner_loop
 
-end_for_k:
-    add r6, r6, #2    @ Change increment value
-    b for_j
+    end_inner_loop:
+    add r7, r7, #1  @ Increment row index
+    b outer_loop
 
-end_for_j:
-    add r5, r5, #2    @ Change increment value
-    b for_i
-
-end_for_i:
-    ldmfd sp!, {r0-r12, lr}
-    bx lr
+end_outer_loop:
+    ldmfd sp!, {r4-r11, lr}  @ Restore registers
+    bx lr  @ Return
