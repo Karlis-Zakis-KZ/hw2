@@ -4,7 +4,7 @@
 .type matmul, %function
 
 matmul:
-    stmfd sp!, {r0-r12, lr}  @ Save registers to the stack
+    stmfd sp!, {r0-r11, lr}  @ Save registers to the stack
 
     mov r4, r0  @ h1
     mov r5, r1  @ w1
@@ -32,13 +32,13 @@ loop_k:
     cmp r3, r5
     blt loop_k
     add r1, r1, #1
-    add r9, r9, #4
+    add r9, r9, r5, lsl #2  @ Increment by width of matrix 2
     cmp r1, r8
     blt loop_j
     add r0, r0, #1
-    add r6, r6, #4
+    add r6, r6, r5, lsl #2  @ Increment by width of matrix 1
     cmp r0, r4
     blt loop_i
 
-    ldmfd sp!, {r0-r12, lr}  @ Restore registers from the stack
+    ldmfd sp!, {r0-r11, pc}  @ Restore registers from the stack
     bx lr @ Return
