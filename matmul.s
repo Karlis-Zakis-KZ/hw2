@@ -1,9 +1,9 @@
 .text
 .align 2
-.global matmul
-.type matmul, %function
+.global matmul_refactored
+.type matmul_refactored, %function
 
-matmul:
+matmul_refactored:
     stmfd sp!, {r0-r12, lr}
 
     mov r4, #0
