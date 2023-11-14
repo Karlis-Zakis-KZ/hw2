@@ -37,7 +37,7 @@ for_k:
   add r8, r8, r6, LSL#2
   ldr r3, [r1, r8] 
 
-  mla r11, r2, r3, #0
+  mul r11, r2, r3
 
   mov r10, r5, LSL#2 
   mul r8, r10, r4 
