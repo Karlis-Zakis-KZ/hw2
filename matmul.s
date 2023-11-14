@@ -38,7 +38,6 @@ middle_loop:
     bge end_middle_loop         @ Break if j >= cols_B
 
     mov r11, #0                 @ Initialize k loop index to 0
-    mov r12, #0                 @ r12 will store the current index in matrix A and B
 inner_loop:
     cmp r11, r3                 @ Compare k with cols_A/rows_B
     bge end_inner_loop          @ Break if k >= cols_A/rows_B
