@@ -18,15 +18,17 @@ matmul:
 
 loop_i:
     mov r1, #0  @ Initialize row index for m_final
+    mov r11, r6  @ Save start of row for m1
 
 loop_j:
     mov r2, #0  @ Initialize row index for m1
     mov r3, #0  @ Initialize column index for m2
+    mov lr, r9  @ Save start of row for m2
 
 loop_k:
-    ldr r11, [r6, r2, lsl #2]  @ Load element from m1
-    ldr lr, [r9, r3, lsl #2]  @ Load element from m2
-    mul ip, r11, lr  @ Multiply elements
+    ldr r12, [r11, r2, lsl #2]  @ Load element from m1
+    ldr ip, [lr, r3, lsl #2]  @ Load element from m2
+    mul ip, r12, ip  @ Multiply elements
     str ip, [r10, r1, lsl #2]  @ Store result in m_final
     add r3, r3, #1  @ Increment column index for m2
     add r2, r2, #1  @ Increment row index for m1
@@ -34,12 +36,13 @@ loop_k:
     blt loop_k  @ Branch back if not done
 
     add r1, r1, #1  @ Increment row index of m_final
-    add r6, r6, r5, lsl #2  @ Increment pointer to m1 by its width
+    add r11, r11, r5, lsl #2  @ Increment pointer to m1 by its width
     cmp r1, r8  @ Check if row index for m_final exceeds matrix width
     blt loop_j  @ Branch back if not done
 
     add r0, r0, #1  @ Increment loop counter
-    add r9, r9, r8, lsl #2  @ Increment pointer to m2 by its width
+    add r6, r6, r5, lsl #2  @ Increment pointer to m1 by its height
+    add r9, r9, r8, lsl #2  @ Increment pointer to m2 by its height
     cmp r0, r4  @ Check if loop counter exceeds matrix height
     blt loop_i  @ Branch back if not done
 
