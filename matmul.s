@@ -24,31 +24,24 @@ while_k:
     cmp r10, r3
     bge end_while_k
 
-    mov r11, r8, LSL #2
-    mov r12, r10, LSL #2
-    mul r6, r11, r3
-    add r6, r6, r12
-
+    mul r6, r8, r3
+    add r6, r6, r10
     ldr r1, [sp, #8]
-    ldr r3, [r1, r6]
+    ldr r3, [r1, r6, LSL #2]
 
-    mov r11, r9, LSL #2
-    mul r6, r12, r5
-    add r6, r6, r11
+    mul r6, r10, r5
+    add r6, r6, r9
     ldr r2, [sp, #60]
-    ldr r4, [r2, r6]
+    ldr r4, [r2, r6, LSL #2]
 
     mul r7, r3, r4
 
+    mul r6, r8, r5
+    add r6, r6, r9
     ldr r1, [sp, #64]
-    mov r11, r8, LSL #2
-    mov r0, r9, LSL #2
-    mul r6, r11, r5
-    add r6, r6, r0
-
-    ldr r2, [r1, r6]
+    ldr r2, [r1, r6, LSL #2]
     add r3, r7, r2
-    str r3, [r1, r6]
+    str r3, [r1, r6, LSL #2]
 
     add r10, r10, #1
     b while_k
