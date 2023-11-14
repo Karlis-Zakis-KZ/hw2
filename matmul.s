@@ -23,9 +23,9 @@ loop_j:
 loop_k:
     ldr r11, [r6, r3, lsl #2]
     ldr lr, [r9, r2, lsl #2]
-    mul r11, r11, lr
+    mul ip, r11, lr  @ Use ip (r12) as temporary register
     ldr lr, [r10, r1, lsl #2]
-    add lr, lr, r11
+    add lr, lr, ip
     str lr, [r10, r1, lsl #2]
     add r2, r2, #1
     add r3, r3, #1
