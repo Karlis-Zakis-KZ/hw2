@@ -7,8 +7,6 @@ matmul:
     stmfd sp!, {r0-r12, lr}  // Save registers to the stack
 
     mov r5, #0  // Initialize i
-    mov r6, #0  // Initialize j
-    mov r7, #0  // Initialize k
 
 i_loop:
     ldr r3, [sp, #0]  // Load matrix1 row count
@@ -58,15 +56,18 @@ k_loop:
     str r2, [r0, r8]
 
     add r7, r7, #1  // Increment k
-    b k_loop  // Repeat k loop
+    cmp r7, r2
+    blt k_loop  // Repeat k loop
 
 end_k_loop:
     add r6, r6, #1  // Increment j
-    b j_loop  // Repeat j loop
+    cmp r6, r4
+    blt j_loop  // Repeat j loop
 
 end_j_loop:
     add r5, r5, #1  // Increment i
-    b i_loop  // Repeat i loop
+    cmp r5, r3
+    blt i_loop  // Repeat i loop
 
 end_i_loop:
     ldmfd sp!, {r0-r12, lr}  // Restore registers from the stack
