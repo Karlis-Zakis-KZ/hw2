@@ -12,7 +12,7 @@ matmul:
     mov r7, r3  @ h2
     mov r8, r4  @ w2
     mov r9, r5  @ *m2
-    mov r10, r6  @ *m3
+    mov r10, r6  @ *m_final
 
     mov r0, #0
 loop_i:
@@ -41,3 +41,4 @@ loop_k:
     blt loop_i
 
     ldmfd sp!, {r0-r11, pc}  @ Restore registers from the stack
+
