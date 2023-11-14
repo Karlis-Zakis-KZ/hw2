@@ -29,18 +29,18 @@ while_k:
     mov r12, r10, LSL #2
     add r6, r6, r12
 
-    ldr r1, [sp, #16]
+    ldr r1, [sp, #8]
     ldr r3, [r1, r6]
 
     mul r6, r12, r5
     mov r11, r9, LSL #2
     add r6, r6, r11
-    ldr r2, [sp, #48]
+    ldr r2, [sp, #60]
     ldr r4, [r2, r6]
 
     mul r7, r3, r4
 
-    ldr r1, [sp, #32]
+    ldr r1, [sp, #64]
     mov r11, r8, LSL #2
     mul r6, r11, r5
     mov r0, r9, LSL #2
